@@ -53,10 +53,6 @@ abstract contract DRIP20 {
     uint256 private _currEmissionBlockNum;
     uint256 private _currNumAccruers;
 
-    /*//////////////////////////////////////////////////////////////
-                               CONSTRUCTOR
-    //////////////////////////////////////////////////////////////*/
-
     constructor(
         string memory _name,
         string memory _symbol,

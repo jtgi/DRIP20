@@ -6,7 +6,7 @@ I foresee this being the most useful in games and certain NFT projects.
 
 ## Contracts
 
-DRIP20.sol - ERC20 implementation that supports streaming. 
+DRIP20.sol - ERC20 implementation that supports dripping. 
 
 - Must define `_emissionRatePerBlock` which determines how many tokens will be dripped into each wallet per block. This value is immutable after intialization.
 - `_startDripping(address)` and `_stopDripping(address)` add and remove wallets respectively.
@@ -16,14 +16,14 @@ GIGADRIP20.sol - Modification of `DRIP20.sol` that allows wallets to receive lar
 - Same constructor args as `DRIP20.sol`
 - `_startDripping(address, multiplier)` and `_stopDripping(address, , multiplier)` increase and decrease a wallets emissions respectively.
   
-  -  All wallets start off with `multiplier == 0` (not receiving any token drips). When you `_startDripping()` to an address, it adds to the wallet's muliplier. ie `_startDripping(newWallet, 1)` will increase `newWallet` multiplier to `1`, meaning it will receive drips at the `_emissionRatePerBlock`. `_startDripping(newWallet, 3)` will add `3` to its emission rate, so now `newWallet` will have `4 * _emissionRatePerBlock` dripped into its wallet per block.
-  - Same thing happens for `_stopDripping(address, , multiplier)`, but it decreases a wallets multiplier until it's 0.
+  -  All wallets start off with `multiplier == 0` (not receiving any token drips). Example: `_startDripping(newWallet, 1)` will increase `newWallet` multiplier to `1`, meaning it will receive drips at the `_emissionRatePerBlock`. A second txn of `_startDripping(newWallet, 3)` will add `3` to its emission rate, so now `newWallet` will have `4 * _emissionRatePerBlock` dripped into its wallet per block.
+  - Same thing happens for `_stopDripping(address, multiplier)`, but it decreases a wallets multiplier until it goes back to 0 (no drips).
 
 ## Example Use Cases
 
 `DRIP20.sol` - Any project that is currently yielding tokens for their users - but rather than having users `claim`, it can directly be dripped into their wallets.
 
-`GIGADRIP20.sol` - NFT projects or games where each NFT yields certain amount of tokens per set time. For example, let's say `Project A` releases 10k PFPs, and each PFP earns 5 `$ATokens` per day. If a wallet has 10 PFPs, they would need to earn 5 * 10 `ATokens` per day, so this wallets `multiplier` would be 10 (or however many PFPs they own).
+`GIGADRIP20.sol` - NFT projects or games where each NFT yields certain amount of tokens per set time. For example, let's say `Project A` releases 10k PFPs, and each PFP earns 5 `$ATokens` per day. If a wallet has 10 PFPs, they would need to earn 5 * 10 `ATokens` per day. Rather than have the wallet claim `$ATokens` every so often, these tokens can be dripped into the wallet. For GIGADRIP20, this wallet's `multiplier` would be 5 (or however many PFPs they own) and the emission rate per block would sum up to 5 tokens a day.
 
 ## Gas usage
 
@@ -49,9 +49,9 @@ Will release this as a package soon, but as of now, feel free to copy pasta (wou
 
 This is the base implementation of ERC20 tokens that support dripping. So, these are things you should know:
 
-There is no `maxSupply` or global `stopDripping` function. I designed this with a game in mind where the game economy continues to grow and currency inflates. Think about Maplestory or Axie Infinity, their in game currency doesn't have a `maxSupply` or prevent wallets from earning because that would stunt game growth and worsen playability. 
+There is no `maxSupply` or global `stopDripping` function. I initially designed this for a game where the game economy continues to grow and inflate. Think about Maplestory or Axie Infinity, their in-game currency doesn't have a `maxSupply` because that would stunt game growth and worsen playability (nor does it plan to prevent wallets from earning in the future). The economy just continues to grow and inflate as they add users.
 
-Also, because this is a `base` implementation, I think the implementing contract should define the logic for `maxSupply` or the logic for stopping emissions completely. You could probably write some cool functions to stop wallet streaming (since you get gas refunds on this since you're clearing storage).
+Also, because this is a `base` implementation, I believe the implementing contract should define the logic for `maxSupply` or the logic for stopping emissions completely. Similarly to OpenZeppelin's base ERC20 implementation, it doesn't specify a `maxSupply` and it's on the implementing contract to add this logic if desired. Tbh, You could probably write some cool functions to stop wallet streaming (since you get gas refunds on this since you're clearing storage).
 
 ## Shoutouts
 
