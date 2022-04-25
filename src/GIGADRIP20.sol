@@ -11,7 +11,6 @@ import {console} from "forge-std/console.sol";
 ///@notice shout out to solmate (@t11s) for the slim and efficient ERC20 implementation!
 ///@notice shout out to superfluid and UBI for the dripping inspiration!
 
-/// @dev Do not manually set balances without updating totalSupply, as the sum of all user balances must not exceed it.
 abstract contract GIGADRIP20 {
     /*==============================================================
     ==                            EVENTS                          ==
