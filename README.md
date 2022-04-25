@@ -21,6 +21,8 @@ GIGADRIP20.sol - Modification of `DRIP20.sol` that allows wallets to receive lar
   -  All wallets start off with `multiplier == 0` (not receiving any token drips). Example: `_startDripping(newWallet, 1)` will increase `newWallet` multiplier to `1`, meaning it will receive drips at the `_emissionRatePerBlock`. A second txn of `_startDripping(newWallet, 3)` will add `3` to its emission rate, so now `newWallet` will have `4 * _emissionRatePerBlock` dripped into its wallet per block.
   - Same thing happens for `_stopDripping(address, multiplier)`, but it decreases a wallets multiplier until it goes back to 0 (no drips).
 
+For NFT projects, you can override ERC721 transfer() to call `_startDripping()` and `_stopDripping()` appropriately.
+
 ## Example Use Cases
 
 `DRIP20.sol` - Any project that is currently yielding tokens for their users - but rather than having users `claim`, it can directly be dripped into their wallets.
