@@ -15,14 +15,15 @@ GIGADRIP20.sol - Modification of `DRIP20.sol` that allows wallets to receive lar
 
 - Same constructor args as `DRIP20.sol`
 - `_startDripping(address, multiplier)` and `_stopDripping(address, , multiplier)` increase and decrease a wallets emissions respectively.
--- All wallets start off with `multiplier == 0` (not receiving any token drips). When you `_startDripping()` to an address, it adds to the wallet's muliplier. ie `_startDripping(newWallet, 1)` will increase `newWallet` multiplier to `1`, meaning it will receive drips at the `_emissionRatePerBlock`. `_startDripping(newWallet, 3)` will add `3` to its emission rate, so now `newWallet` will have `4 * _emissionRatePerBlock` dripped into its wallet per block.
+  
+  -  All wallets start off with `multiplier == 0` (not receiving any token drips). When you `_startDripping()` to an address, it adds to the wallet's muliplier. ie `_startDripping(newWallet, 1)` will increase `newWallet` multiplier to `1`, meaning it will receive drips at the `_emissionRatePerBlock`. `_startDripping(newWallet, 3)` will add `3` to its emission rate, so now `newWallet` will have `4 * _emissionRatePerBlock` dripped into its wallet per block.
 -- Same thing happens for `_stopDripping(address, , multiplier)`, but it decreases a wallets multiplier until it's 0.
 
 ## Example Use Cases
 
 `DRIP20.sol` - Any project that is currently yielding tokens for their users - but rather than having users `claim`, it can directly be dripped into their wallets.
 
-`GIGADRIP20.sol` - NFT projects are games where each NFT yields certain amount of tokens per set time. For example, let's say `Project A` releases 10k PFPs, and each PFP earns 5 `$ATokens` per day. If a wallet has 10 PFPs, they would need to earn 5 * 10 `ATokens` per day, so this wallets `multiplier` would be 10 (or however many PFPs they own).
+`GIGADRIP20.sol` - NFT projects or games where each NFT yields certain amount of tokens per set time. For example, let's say `Project A` releases 10k PFPs, and each PFP earns 5 `$ATokens` per day. If a wallet has 10 PFPs, they would need to earn 5 * 10 `ATokens` per day, so this wallets `multiplier` would be 10 (or however many PFPs they own).
 
 ## Gas usage
 
