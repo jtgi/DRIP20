@@ -2,6 +2,8 @@
 
 This is an lightweight ERC20 implementation that supports token dripping(streaming). Rather than wallets `claiming` tokens, tokens will `drip` into desired wallets at an emission rate accrued per block.
 
+TLDR; Calculates a wallet's balance based on emission rate and the block num a wallet starts accruing at. Token balances of accuring wallets will increase every block.
+
 I foresee this being the most useful in games and certain NFT projects.
 
 ## Contracts
