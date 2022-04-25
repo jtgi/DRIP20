@@ -4,7 +4,8 @@ This is an lightweight ERC20 implementation that supports token dripping(streami
 
 I foresee this being the most useful in games and certain NFT projects.
 
-### Contracts
+## Contracts
+---
 
 DRIP20.sol - ERC20 implementation that supports streaming. 
 
@@ -18,13 +19,15 @@ GIGADRIP20.sol - Modification of `DRIP20.sol` that allows wallets to receive lar
 -- All wallets start off with `multiplier == 0` (not receiving any token drips). When you `_startDripping()` to an address, it adds to the wallet's muliplier. ie `_startDripping(newWallet, 1)` will increase `newWallet` multiplier to `1`, meaning it will receive drips at the `_emissionRatePerBlock`. `_startDripping(newWallet, 3)` will add `3` to its emission rate, so now `newWallet` will have `4 * _emissionRatePerBlock` dripped into its wallet per block.
 -- Same thing happens for `_stopDripping(address, , multiplier)`, but it decreases a wallets multiplier until it's 0.
 
-### Example Use Cases
+## Example Use Cases
+---
 
 `DRIP20.sol` - Any project that is currently yielding tokens for their users - but rather than having users `claim`, it can directly be dripped into their wallets.
 
 `GIGADRIP20.sol` - NFT projects are games where each NFT yields certain amount of tokens per set time. For example, let's say `Project A` releases 10k PFPs, and each PFP earns 5 `$ATokens` per day. If a wallet has 10 PFPs, they would need to earn 5 * 10 `ATokens` per day, so this wallets `multiplier` would be 10 (or however many PFPs they own).
 
-### Gas usage
+## Gas usage
+---
 
 [Here is a repo benchmarking OpenZeppelin's ERC20 implementation.](https://github.com/alephao/solidity-benchmarks/blob/main/ERC20.md)
 
@@ -34,17 +37,20 @@ Both `DRIP20.sol` and `GIGADRIP20.sol` are very comparable in gas usage, in some
 ![GIGADRIP20 Gas Report](/gas-report/GIGADRIP20-gas-report.png "GIGADRIP20 Gas Report")
 
 
-### Security
+## Security
+---
 
 This is an experimental implementation of ERC20 and has not received a professional audit. I promise no security guarantees and will not be liable for any issues.
 
-### Testing and Usage
+## Testing and Usage
+---
 
 I use [Foundry](https://github.com/foundry-rs/foundry).
 
 Will release this as a package soon, but as of now, feel free to copy pasta (would appreciate acknowledgements if so).
 
-### Caveats
+## Caveats
+---
 
 This is the base implementation of ERC20 tokens that support dripping. So, these are things you should know:
 
@@ -52,16 +58,19 @@ There is no `maxSupply` or global `stopDripping` function. I designed this with 
 
 Also, because this is a `base` implementation, I think the implementing contract should define the logic for `maxSupply` or the logic for stopping emissions completely. You could probably write some cool functions to stop wallet streaming (since you get gas refunds on this since you're clearing storage).
 
-### Shoutouts
+## Shoutouts
+---
 
 T11s and [Solmate](https://github.com/Rari-Capital/solmate) for the slim ERC20 implementation.
 [Superfluid](https://github.com/superfluid-finance) and [Proof of Humanity](https://www.proofofhumanity.id/) for the token dripping inspiration.
 
-### Contributions
+## Contributions
+---
 
 Feel free to submit a PR for anything
 
-### Todo
+## Todo
+---
 
 - Potentially add EIP-2612.
 - Potentially have mutable emissions - would need to be careful about totalSupply() calculations and ensure proper emission block calculations.
