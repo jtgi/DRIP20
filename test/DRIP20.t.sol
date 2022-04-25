@@ -3,22 +3,24 @@ pragma solidity ^0.8.0;
 
 import "ds-test/test.sol";
 import {console} from "forge-std/console.sol";
-import {MockERC20SlimStream} from "./mocks/MockERC20SlimStream.sol";
+import {MockDRIP20} from "./mocks/MockDRIP20.sol";
 
 interface Vm {
     function prank(address) external;
 
     function startPrank(address) external;
 
-    function roll(uint256) external;
-
     function startPrank(address, address) external;
 
     function stopPrank() external;
+
+    function roll(uint256) external;
+
+    function expectRevert(bytes calldata) external;
 }
 
-contract ERC20SlimStreamTest is DSTest {
-    MockERC20SlimStream token;
+contract DRIP20Test is DSTest {
+    MockDRIP20 token;
 
     address user1;
     address user2;
@@ -27,7 +29,7 @@ contract ERC20SlimStreamTest is DSTest {
     Vm vm = Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
 
     function setUp() public {
-        token = new MockERC20SlimStream("MOCK", "MOCK", 18, 10);
+        token = new MockDRIP20("MOCK", "MOCK", 18, 10); // token emission is 10 per block
         user1 = address(0xaa);
         user2 = address(0xbb);
         user3 = address(0xcc);
@@ -74,34 +76,32 @@ contract ERC20SlimStreamTest is DSTest {
         assertEq(token.balanceOf(user1), 1e18 - 0.5e18);
     }
 
-    function testStreamSingleUser() public {
-        // need to start on a non zero block number since we use block 0 as 'not streaming'
+    function testDripSingleUser() public {
+        // need to start on a non zero block number since we use block 0 as 'not dripping'
         vm.roll(1);
-        token.startStreaming(user1);
+        token.startDripping(user1);
 
         assertEq(token.totalSupply(), 0);
         assertEq(token.balanceOf(user1), 0);
 
         // should accumulat 4 * 10 tokens
-        console.log(block.number);
         vm.roll(5);
-        console.log(block.number);
 
         assertEq(token.totalSupply(), 40);
         assertEq(token.balanceOf(user1), 40);
     }
 
-    function testStreamMultiUser() public {
-        // need to start on a non zero block number since we use block 0 as 'not streaming'
+    function testDripMultiUser() public {
+        // need to start on a non zero block number since we use block 0 as 'not dripping'
         vm.roll(1);
-        token.startStreaming(user1);
+        token.startDripping(user1);
         vm.roll(5);
 
         assertEq(token.totalSupply(), 40);
         assertEq(token.balanceOf(user1), 40);
 
-        token.startStreaming(user2);
-        token.startStreaming(user3);
+        token.startDripping(user2);
+        token.startDripping(user3);
 
         // nothing should change since we didnt roll blocks
         assertEq(token.totalSupply(), 40);
@@ -118,16 +118,16 @@ contract ERC20SlimStreamTest is DSTest {
         assertEq(token.balanceOf(user3), 50);
     }
 
-    function testStopStreamSingleUser() public {
-        // need to start on a non zero block number since we use block 0 as 'not streaming'
+    function testStopDripSingleUser() public {
+        // need to start on a non zero block number since we use block 0 as 'not dripping'
         vm.roll(1);
-        token.startStreaming(user1);
+        token.startDripping(user1);
         vm.roll(5);
 
         assertEq(token.totalSupply(), 40);
         assertEq(token.balanceOf(user1), 40);
 
-        token.stopStreaming(user1);
+        token.stopDripping(user1);
 
         // nothing should change since we didnt roll blocks
         assertEq(token.totalSupply(), 40);
@@ -140,12 +140,12 @@ contract ERC20SlimStreamTest is DSTest {
         assertEq(token.balanceOf(user1), 40);
     }
 
-    function testStopStreamMultiUser() public {
-        // need to start on a non zero block number since we use block 0 as 'not streaming'
+    function testStopDripMultiUser() public {
+        // need to start on a non zero block number since we use block 0 as 'not dripping'
         vm.roll(1);
-        token.startStreaming(user1);
-        token.startStreaming(user2);
-        token.startStreaming(user3);
+        token.startDripping(user1);
+        token.startDripping(user2);
+        token.startDripping(user3);
         vm.roll(5);
 
         assertEq(token.totalSupply(), 40 * 3);
@@ -153,8 +153,8 @@ contract ERC20SlimStreamTest is DSTest {
         assertEq(token.balanceOf(user2), 40);
         assertEq(token.balanceOf(user3), 40);
 
-        token.stopStreaming(user1);
-        token.stopStreaming(user2);
+        token.stopDripping(user1);
+        token.stopDripping(user2);
 
         // nothing should change since we didnt roll blocks
         assertEq(token.totalSupply(), 40 * 3);
@@ -171,10 +171,10 @@ contract ERC20SlimStreamTest is DSTest {
         assertEq(token.balanceOf(user3), 40 + 50);
     }
 
-    function testTransferFromStreamingUserToNonStreamingUser() public {
-        // need to start on a non zero block number since we use block 0 as 'not streaming'
+    function testTransferFromDrippingUserToNonDrippingUser() public {
+        // need to start on a non zero block number since we use block 0 as 'not dripping'
         vm.roll(1);
-        token.startStreaming(user1);
+        token.startDripping(user1);
         vm.roll(5);
 
         assertEq(token.totalSupply(), 40);
@@ -195,11 +195,11 @@ contract ERC20SlimStreamTest is DSTest {
         assertEq(token.balanceOf(user2), 20);
     }
 
-    function testTransferFromStreamingUserToStreamingUser() public {
-        // need to start on a non zero block number since we use block 0 as 'not streaming'
+    function testTransferFromDrippingUserToDrippingUser() public {
+        // need to start on a non zero block number since we use block 0 as 'not dripping'
         vm.roll(1);
-        token.startStreaming(user1);
-        token.startStreaming(user2);
+        token.startDripping(user1);
+        token.startDripping(user2);
         vm.roll(5);
 
         assertEq(token.totalSupply(), 80);
@@ -221,10 +221,10 @@ contract ERC20SlimStreamTest is DSTest {
         assertEq(token.balanceOf(user2), 60 + 50);
     }
 
-    function testTransferFromNonStreamingUserToStreamingUser() public {
-        // need to start on a non zero block number since we use block 0 as 'not streaming'
+    function testTransferFromNonDrippingUserToDrippingUser() public {
+        // need to start on a non zero block number since we use block 0 as 'not dripping'
         vm.roll(1);
-        token.startStreaming(user1);
+        token.startDripping(user1);
         vm.roll(5);
 
         vm.prank(user2);
@@ -249,10 +249,10 @@ contract ERC20SlimStreamTest is DSTest {
         assertEq(token.balanceOf(user2), 50);
     }
 
-    function testBurnFromStreamingUser() public {
-        // need to start on a non zero block number since we use block 0 as 'not streaming'
+    function testBurnFromDrippingUser() public {
+        // need to start on a non zero block number since we use block 0 as 'not dripping'
         vm.roll(1);
-        token.startStreaming(user1);
+        token.startDripping(user1);
         vm.roll(5);
 
         assertEq(token.totalSupply(), 40);
@@ -269,5 +269,20 @@ contract ERC20SlimStreamTest is DSTest {
 
         assertEq(token.totalSupply(), 50);
         assertEq(token.balanceOf(user1), 50);
+    }
+
+    function testRevertStartDrip() public {
+        // need to start on a non zero block number since we use block 0 as 'not dripping'
+        vm.roll(1);
+        token.startDripping(user1);
+        vm.expectRevert(bytes("user already accruing"));
+        token.startDripping(user1);
+    }
+
+    function testRevertStopDrip() public {
+        // need to start on a non zero block number since we use block 0 as 'not dripping'
+        vm.roll(1);
+        vm.expectRevert(bytes("user not accruing"));
+        token.stopDripping(user1);
     }
 }
