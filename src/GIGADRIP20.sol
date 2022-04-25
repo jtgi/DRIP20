@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {console} from "forge-std/console.sol";
-
 ///@author 0xBeans
 ///@notice This is a beefed up ERC20 implementation of DRIP20 that supports emission multipliers.
 ///@notice Multipliers are useful when certain users should accrue larger emissions. For example,
@@ -115,6 +113,7 @@ abstract contract GIGADRIP20 {
 
     function balanceOf(address addr) public view returns (uint256) {
         Accruer memory accruer = _accruers[addr];
+
         if (accruer.accrualStartBlock == 0) {
             return accruer.balance;
         }
@@ -182,6 +181,8 @@ abstract contract GIGADRIP20 {
             accruer.multiplier += multiplier;
         }
 
+        // need to update the balance to start "fresh"
+        // from the updated block and updated multiplier if the addr was already accruing
         if (accruer.accrualStartBlock != 0) {
             accruer.balance = balanceOf(addr);
         }
