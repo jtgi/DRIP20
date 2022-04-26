@@ -72,8 +72,7 @@ abstract contract DRIP20 {
     function approve(address spender, uint256 amount)
         public
         virtual
-        returns (bool)
-    {
+        returns (bool) {
         allowance[msg.sender][spender] = amount;
 
         emit Approval(msg.sender, spender, amount);
@@ -104,8 +103,7 @@ abstract contract DRIP20 {
     function transfer(address to, uint256 amount)
         public
         virtual
-        returns (bool)
-    {
+        returns (bool) {
         _transfer(msg.sender, to, amount);
         return true;
     }
